@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OSOExclusiveOperationController : NSObject
 
+/**
+ *  Adds and instance of an OSOExclusiveOperation to the current operations.
+ *
+ *  This happens automatically when adding an OSOExclusiveOperation to an OSOOperationQueue
+ */
 + (void)addExclusiveOperation:(__kindof OSOOperation<OSOExclusiveOperation> *)operation;
 
 @end

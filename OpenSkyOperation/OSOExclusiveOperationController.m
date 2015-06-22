@@ -30,10 +30,16 @@
 
 // MARK: - Add Operation
 - (void)addExclusiveOperation:(__kindof OSOOperation<OSOExclusiveOperation> *)operation {
-    [operation addObserver:self];
+    OSSpinLockLock(&__lock);;
 
-    NSHashTable *table = [self operationsForKey:[operation.class exclusivityIdentifier]];
-    for (__kindof OSOOperation<OSOExclusiveOperation> *op in [table allObjects]) {
+    NSHashTable *table = [self primitiveOperationsForKey:[operation.class exclusivityIdentifier]];
+
+    if ([table containsObject:operation]) {
+        OSSpinLockUnlock(&__lock);
+        return;
+    }
+
+    for (__kindof OSOOperation<OSOExclusiveOperation> *op in table) {
         [operation addDependency:op];
         if ([operation respondsToSelector:@selector(willWaitForOperation:)]) {
             [operation willWaitForOperation:op];
@@ -41,19 +47,16 @@
     }
 
     [table addObject:operation];
+
+    OSSpinLockUnlock(&__lock);
 }
 
-- (NSHashTable *)operationsForKey:(NSString *)key {
-    OSSpinLockLock(&__lock);
-
+- (NSHashTable *)primitiveOperationsForKey:(NSString *)key {
     NSHashTable *table = [self.operations objectForKey:key];
     if (!table) {
         table = [[NSHashTable alloc] initWithOptions:NSPointerFunctionsWeakMemory capacity:10];
         [self.operations setObject:table forKey:key];
     }
-
-    OSSpinLockUnlock(&__lock);
-
     return table;
 }
 
