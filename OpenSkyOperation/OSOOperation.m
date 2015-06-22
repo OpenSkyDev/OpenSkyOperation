@@ -26,7 +26,7 @@ static NSString *const kOSOOperationState = @"state";
 
 @property (nonatomic, strong, readwrite) NSMutableSet<id<OSOOperationObserver>> *observers;
 
-@property (nonatomic, strong, readwrite) NSMutableSet<NSError *> *errors;
+@property (nonatomic, strong, readwrite) NSMutableSet<NSError *> *backingErrors;
 
 @end
 
@@ -182,17 +182,17 @@ static NSString *const kOSOOperationState = @"state";
 // MARK: - Errors
 - (void)appendErrors:(NSArray<NSError *> *)errors {
     OSSpinLockLock(&__lock);
-    if (!_errors) {
-        _errors = [[NSMutableSet alloc] init];
+    if (!_backingErrors) {
+        _backingErrors = [[NSMutableSet alloc] init];
     }
-    [_errors addObjectsFromArray:errors];
+    [_backingErrors addObjectsFromArray:errors];
     OSSpinLockUnlock(&__lock);
 }
 
 - (NSArray<NSError *> *)allErrors {
     NSArray<NSError *> *errors = nil;
     OSSpinLockLock(&__lock);
-    errors = [_errors allObjects];
+    errors = [_backingErrors allObjects];
     OSSpinLockUnlock(&__lock);
     return errors;
 }
