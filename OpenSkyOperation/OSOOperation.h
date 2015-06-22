@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
 @interface OSOOperation (HelperMethods)
 
 - (void)finish;
+- (void)finishWithError:(nullable NSError *)error;
 - (void)finishWithErrors:(nullable NSArray<NSError *> *)errors;
 
 @end

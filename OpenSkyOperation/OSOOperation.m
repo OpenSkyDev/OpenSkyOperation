@@ -131,6 +131,14 @@ static NSString *const kOSOOperationState = @"state";
     [self finishWithErrors:nil];
 }
 
+- (void)finishWithError:(nullable NSError *)error {
+    NSArray *errors = nil;
+    if (error) {
+        errors = @[error];
+    }
+    [self finishedWithErrors:errors];
+}
+
 - (void)finishWithErrors:(nullable NSArray<NSError *> *)errors {
     if (OSAtomicAdd32Barrier(1, &__calledFinish) > 1) {
         return;
