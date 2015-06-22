@@ -9,3 +9,4 @@
 #import <OpenSkyOperation/OSOOperation.h>
 #import <OpenSkyOperation/OSOOperationQueue.h>
 #import <OpenSkyOperation/OSOOperationObserver.h>
+#import <OpenSkyOperation/OSOExclusiveOperationController.h>

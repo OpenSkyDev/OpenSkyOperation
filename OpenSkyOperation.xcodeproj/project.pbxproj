@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		94298D761B386CC2009FE1CE /* OSOExclusiveOperationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 94298D741B386CC2009FE1CE /* OSOExclusiveOperationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		94298D771B386CC2009FE1CE /* OSOExclusiveOperationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94298D751B386CC2009FE1CE /* OSOExclusiveOperationController.m */; };
+		94298D7B1B38737B009FE1CE /* TestExclusive.m in Sources */ = {isa = PBXBuildFile; fileRef = 94298D7A1B38737B009FE1CE /* TestExclusive.m */; };
 		94443D0D1B366A5B0036000A /* OpenSkyOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 94443D0C1B366A5B0036000A /* OpenSkyOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94443D141B366A5B0036000A /* OpenSkyOperation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94443D091B366A5B0036000A /* OpenSkyOperation.framework */; };
 		94443D191B366A5B0036000A /* OpenSkyOperationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 94443D181B366A5B0036000A /* OpenSkyOperationTests.m */; };
@@ -28,6 +31,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		94298D741B386CC2009FE1CE /* OSOExclusiveOperationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSOExclusiveOperationController.h; sourceTree = "<group>"; };
+		94298D751B386CC2009FE1CE /* OSOExclusiveOperationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSOExclusiveOperationController.m; sourceTree = "<group>"; };
+		94298D791B38737B009FE1CE /* TestExclusive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestExclusive.h; sourceTree = "<group>"; };
+		94298D7A1B38737B009FE1CE /* TestExclusive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestExclusive.m; sourceTree = "<group>"; };
 		94443D091B366A5B0036000A /* OpenSkyOperation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSkyOperation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94443D0C1B366A5B0036000A /* OpenSkyOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSkyOperation.h; sourceTree = "<group>"; };
 		94443D0E1B366A5B0036000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -60,6 +67,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		94298D781B387362009FE1CE /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				94298D791B38737B009FE1CE /* TestExclusive.h */,
+				94298D7A1B38737B009FE1CE /* TestExclusive.m */,
+			);
+			name = Operations;
+			sourceTree = "<group>";
+		};
 		94443CFF1B366A5B0036000A = {
 			isa = PBXGroup;
 			children = (
@@ -87,6 +103,8 @@
 				94443D2B1B366FDE0036000A /* OSOOperationQueue.h */,
 				94443D2C1B366FDE0036000A /* OSOOperationQueue.m */,
 				94443D291B366E7F0036000A /* OSOOperationObserver.h */,
+				94298D741B386CC2009FE1CE /* OSOExclusiveOperationController.h */,
+				94298D751B386CC2009FE1CE /* OSOExclusiveOperationController.m */,
 				94443D0E1B366A5B0036000A /* Info.plist */,
 			);
 			path = OpenSkyOperation;
@@ -96,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				94443D181B366A5B0036000A /* OpenSkyOperationTests.m */,
+				94298D781B387362009FE1CE /* Operations */,
 				94443D1A1B366A5B0036000A /* Info.plist */,
 			);
 			path = OpenSkyOperationTests;
@@ -108,6 +127,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94298D761B386CC2009FE1CE /* OSOExclusiveOperationController.h in Headers */,
 				94443D2D1B366FDE0036000A /* OSOOperationQueue.h in Headers */,
 				94443D251B366A8B0036000A /* OSOOperation.h in Headers */,
 				94443D2A1B366EA60036000A /* OSOOperationObserver.h in Headers */,
@@ -212,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				94443D261B366A8B0036000A /* OSOOperation.m in Sources */,
+				94298D771B386CC2009FE1CE /* OSOExclusiveOperationController.m in Sources */,
 				94443D2E1B366FDE0036000A /* OSOOperationQueue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +241,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94298D7B1B38737B009FE1CE /* TestExclusive.m in Sources */,
 				94443D191B366A5B0036000A /* OpenSkyOperationTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,6 +11,8 @@
 
 #import <OpenSkyOperation/OSOOperation.h>
 
+#import "OSOExclusiveOperationController.h"
+
 @interface OSOOperationQueue ()
 
 @end
@@ -37,6 +39,10 @@
                 [_op addDependency:dep];
                 [self addOperation:dep];
             }
+        }
+
+        if ([_op conformsToProtocol:@protocol(OSOExclusiveOperation)]) {
+            [OSOExclusiveOperationController addExclusiveOperation:(OSOOperation<OSOExclusiveOperation> *)_op];
         }
 
         [_op willEnqueue];
