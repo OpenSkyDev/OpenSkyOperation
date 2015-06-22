@@ -1,0 +1,2 @@
+# OpenSkyOperation
+Simple NSOperation baseclass
