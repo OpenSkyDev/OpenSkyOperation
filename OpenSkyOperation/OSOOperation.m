@@ -136,7 +136,7 @@ static NSString *const kOSOOperationState = @"state";
     if (error) {
         errors = @[error];
     }
-    [self finishedWithErrors:errors];
+    [self finishWithErrors:errors];
 }
 
 - (void)finishWithErrors:(nullable NSArray<NSError *> *)errors {
