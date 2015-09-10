@@ -18,6 +18,7 @@
 		94443D2A1B366EA60036000A /* OSOOperationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 94443D291B366E7F0036000A /* OSOOperationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94443D2D1B366FDE0036000A /* OSOOperationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 94443D2B1B366FDE0036000A /* OSOOperationQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94443D2E1B366FDE0036000A /* OSOOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 94443D2C1B366FDE0036000A /* OSOOperationQueue.m */; };
+		9493C1171BA2318E00D4134E /* TestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9493C1161BA2318E00D4134E /* TestOperation.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,8 @@
 		94443D291B366E7F0036000A /* OSOOperationObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSOOperationObserver.h; path = ../OSOOperationObserver.h; sourceTree = "<group>"; };
 		94443D2B1B366FDE0036000A /* OSOOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSOOperationQueue.h; sourceTree = "<group>"; };
 		94443D2C1B366FDE0036000A /* OSOOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSOOperationQueue.m; sourceTree = "<group>"; };
+		9493C1151BA2318E00D4134E /* TestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestOperation.h; sourceTree = "<group>"; };
+		9493C1161BA2318E00D4134E /* TestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +73,8 @@
 		94298D781B387362009FE1CE /* Operations */ = {
 			isa = PBXGroup;
 			children = (
+				9493C1151BA2318E00D4134E /* TestOperation.h */,
+				9493C1161BA2318E00D4134E /* TestOperation.m */,
 				94298D791B38737B009FE1CE /* TestExclusive.h */,
 				94298D7A1B38737B009FE1CE /* TestExclusive.m */,
 			);
@@ -243,6 +248,7 @@
 			files = (
 				94298D7B1B38737B009FE1CE /* TestExclusive.m in Sources */,
 				94443D191B366A5B0036000A /* OpenSkyOperationTests.m in Sources */,
+				9493C1171BA2318E00D4134E /* TestOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

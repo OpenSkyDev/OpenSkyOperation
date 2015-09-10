@@ -16,10 +16,12 @@
 #define OSOOperationAssert(condition, desc, ...) NSAssert(condition, desc, ##__VA_ARGS__)
 
 static NSString *const kOSOOperationState = @"state";
+static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 @interface OSOOperation () {
     volatile OSSpinLock __lock;
     volatile int32_t __calledFinish;
+    volatile OSSpinLock __stateLock;
 }
 
 @property (nonatomic, assign, readwrite) OSOOperationState state;
@@ -28,14 +30,18 @@ static NSString *const kOSOOperationState = @"state";
 
 @property (nonatomic, strong, readwrite) NSMutableSet<NSError *> *backingErrors;
 
+@property (nonatomic, assign) BOOL cancelState;
+
 @end
 
 @implementation OSOOperation
+@synthesize state = _state;
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         __lock = OS_SPINLOCK_INIT;
+        __stateLock = OS_SPINLOCK_INIT;
         __calledFinish = 0;
         _state = OSOOperationStateInitialized;
     }
@@ -47,14 +53,21 @@ static NSString *const kOSOOperationState = @"state";
     return (self.state == OSOOperationStateExecuting);
 }
 - (BOOL)isReady {
+    if (self.state == OSOOperationStateInitialized) {
+        return [self isCancelled];
+    }
     if (self.state == OSOOperationStatePending) {
+        if ([self isCancelled]) {
+            self.state = OSOOperationStateReady;
+            return YES;
+        }
         if ([super isReady]) {
             [self preparePendingOperation];
         }
         return NO;
     }
     if (self.state == OSOOperationStateReady) {
-        return [super isReady];
+        return [super isReady] || [self isCancelled];
     }
     return NO;
 }
@@ -62,7 +75,7 @@ static NSString *const kOSOOperationState = @"state";
     return (self.state == OSOOperationStateFinished);
 }
 - (BOOL)isCancelled {
-    return (self.state == OSOOperationStateCancelled);
+    return [self cancelState];
 }
 
 // MARK: - KVO Helpers
@@ -76,29 +89,44 @@ static NSString *const kOSOOperationState = @"state";
     return [NSSet setWithObject:kOSOOperationState];
 }
 + (NSSet *)keyPathsForValuesAffectingIsCancelled {
-    return [NSSet setWithObject:kOSOOperationState];
+    return [NSSet setWithObject:kOSOOperationCanceledState];
 }
 
 // MARK: - Set State
 - (void)setState:(OSOOperationState)state {
     [self willChangeValueForKey:kOSOOperationState];
 
+    OSSpinLockLock(&__stateLock);
+
     switch (_state) {
-        case OSOOperationStateCancelled:
-            break; // Can't leave Cancelled
         case OSOOperationStateFinished:
             break; // Can't leave Finished
         default:
-            OSOOperationAssert(_state != state, @"Can't transition to same state");
+            OSOOperationAssert(OSOOperationCanTransitionToState(_state, state, [self isCancelled]), @"Can't transition from %td to %td",_state,state);
             _state = state;
             break;
     }
 
+    OSSpinLockUnlock(&__stateLock);
+
     [self didChangeValueForKey:kOSOOperationState];
+}
+
+- (OSOOperationState)state {
+    OSSpinLockLock(&__stateLock);
+    OSOOperationState state = _state;
+    OSSpinLockUnlock(&__stateLock);
+    return state;
 }
 
 - (void)preparePendingOperation {
     self.state = OSOOperationStateReady;
+}
+
+- (void)setCancelState:(BOOL)cancelState {
+    [self willChangeValueForKey:kOSOOperationCanceledState];
+    _cancelState = cancelState;
+    [self didChangeValueForKey:kOSOOperationCanceledState];
 }
 
 // MARK: - Enqueue
@@ -106,9 +134,27 @@ static NSString *const kOSOOperationState = @"state";
     self.state = OSOOperationStatePending;
 }
 
+- (BOOL)isConcurrent {
+    return YES;
+}
+
 // MARK: - Start
 - (void)start {
+    [super start];
+
+    if ([self isCancelled]) {
+        [self finish];
+        return;
+    }
+}
+
+- (void)main {
     OSOOperationAssert(self.state == OSOOperationStateReady, @"This operation must be performed on an OSOOperationQueue");
+
+    if ([self isCancelled]) {
+        [self finish];
+        return;
+    }
 
     self.state = OSOOperationStateExecuting;
 
@@ -157,11 +203,12 @@ static NSString *const kOSOOperationState = @"state";
         [observer operation:self didFinishWithErrors:allErrors];
     }
 
+    self.state = OSOOperationStateFinished;
+
     OSSpinLockLock(&__lock);
     self.observers = nil;
+    [_backingErrors removeAllObjects];
     OSSpinLockUnlock(&__lock);
-
-    self.state = OSOOperationStateFinished;
 }
 
 - (void)finishedWithErrors:(nullable NSArray<NSError *> *)errors {
@@ -170,13 +217,21 @@ static NSString *const kOSOOperationState = @"state";
 
 // MARK: - Cancel
 - (void)cancel {
-    [self cancelWithError:nil];
+    if ([self isFinished]) {
+        return;
+    }
+
+    self.cancelState = YES;
+
+    if (self.state > OSOOperationStateReady) {
+        [self finish];
+    }
 }
 - (void)cancelWithError:(nullable NSError *)error {
     if (error) {
         [self appendErrors:@[error]];
     }
-    self.state = OSOOperationStateCancelled;
+    [self cancel];
 }
 
 // MARK: - Errors
@@ -229,3 +284,31 @@ static NSString *const kOSOOperationState = @"state";
 }
 
 @end
+
+BOOL OSOOperationCanTransitionToState(OSOOperationState current, OSOOperationState new, BOOL canceled) {
+    if (current == OSOOperationStateInitialized && new == OSOOperationStatePending) {
+        return YES;
+    }
+    if (current == OSOOperationStatePending && new == OSOOperationStateFinishing && canceled) {
+        return YES;
+    }
+    if (current == OSOOperationStatePending && new == OSOOperationStateReady && canceled) {
+        return YES;
+    }
+    if (current == OSOOperationStatePending && new == OSOOperationStateReady) {
+        return YES;
+    }
+    if (current == OSOOperationStateReady && new == OSOOperationStateExecuting) {
+        return YES;
+    }
+    if (current == OSOOperationStateReady && new == OSOOperationStateFinishing) {
+        return YES;
+    }
+    if (current == OSOOperationStateExecuting && new == OSOOperationStateFinishing) {
+        return YES;
+    }
+    if (current == OSOOperationStateFinishing && new == OSOOperationStateFinished) {
+        return YES;
+    }
+    return NO;
+}

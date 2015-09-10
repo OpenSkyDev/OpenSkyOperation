@@ -20,8 +20,14 @@
 }
 
 - (void)execute {
-    self.exec();
-    [self finish];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul), ^{
+        self.exec();
+        [self finish];
+    });
+}
+
+- (BOOL)isConcurrent {
+    return YES;
 }
 
 @end

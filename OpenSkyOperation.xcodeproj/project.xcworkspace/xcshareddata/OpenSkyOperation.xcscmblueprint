@@ -5,21 +5,28 @@
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "31478BE5544CB39CE8DB1250810D6941B3408E1F" : 0,
-    "83F12094C11BCB2E6D3428EE0CAACCE02582324B" : 0
+    "83F12094C11BCB2E6D3428EE0CAACCE02582324B" : 0,
+    "7BB3BDC2A16671CF88D7D181B67EE3570C9EABF4" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "1FDD823A-A56C-4CC4-AB0D-71D599161E71",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "31478BE5544CB39CE8DB1250810D6941B3408E1F" : "OpenSkyOperation\/",
-    "83F12094C11BCB2E6D3428EE0CAACCE02582324B" : "..\/.."
+    "83F12094C11BCB2E6D3428EE0CAACCE02582324B" : "..\/..",
+    "7BB3BDC2A16671CF88D7D181B67EE3570C9EABF4" : "..\/..\/..\/.."
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "OpenSkyOperation",
-  "DVTSourceControlWorkspaceBlueprintVersion" : 203,
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
   "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "OpenSkyOperation.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/OpenSkyDev\/OpenSkyOperation.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "31478BE5544CB39CE8DB1250810D6941B3408E1F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ministrycentered\/services-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7BB3BDC2A16671CF88D7D181B67EE3570C9EABF4"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ministrycentered\/PCOCocoa.git",

@@ -22,8 +22,7 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
     OSOOperationStateReady       = 2,
     OSOOperationStateExecuting   = 3,
     OSOOperationStateFinishing   = 4,
-    OSOOperationStateFinished    = 5,
-    OSOOperationStateCancelled   = 6,
+    OSOOperationStateFinished    = 5
 };
 
 @interface OSOOperation : NSOperation
@@ -66,6 +65,8 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
 - (void)finishWithErrors:(nullable NSArray<NSError *> *)errors;
 
 @end
+
+FOUNDATION_EXTERN BOOL OSOOperationCanTransitionToState(OSOOperationState, OSOOperationState, BOOL);
 
 NS_ASSUME_NONNULL_END
 
