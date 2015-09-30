@@ -143,7 +143,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     [super start];
 
     if ([self isCancelled]) {
-        [self finish];
+        [self finishOperation];
         return;
     }
 }
@@ -152,13 +152,13 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     OSOOperationAssert(self.state == OSOOperationStateReady, @"This operation must be performed on an OSOOperationQueue");
 
     if ([self isCancelled]) {
-        [self finish];
+        [self finishOperation];
         return;
     }
 
     self.state = OSOOperationStateExecuting;
 
-    for (id<OSOOperationObserver> observer in [self allObservers]) {
+    for (id<OSOOperationObserver> observer in [self allOperationObservers]) {
         [observer operationDidStart:self];
     }
 
@@ -169,23 +169,23 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 - (void)execute {
     NSLog(@"%@ should override %@",NSStringFromClass(self.class),NSStringFromSelector(_cmd));
 
-    [self finish];
+    [self finishOperation];
 }
 
 // MARK: - Finish
-- (void)finish {
-    [self finishWithErrors:nil];
+- (void)finishOperation {
+    [self finishOperationWithErrors:nil];
 }
 
-- (void)finishWithError:(nullable NSError *)error {
+- (void)finishOperationWithError:(nullable NSError *)error {
     NSArray *errors = nil;
     if (error) {
         errors = @[error];
     }
-    [self finishWithErrors:errors];
+    [self finishOperationWithErrors:errors];
 }
 
-- (void)finishWithErrors:(nullable NSArray<NSError *> *)errors {
+- (void)finishOperationWithErrors:(nullable NSArray<NSError *> *)errors {
     if (OSAtomicAdd32Barrier(1, &__calledFinish) > 1) {
         return;
     }
@@ -199,7 +199,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
     [self finishedWithErrors:allErrors];
 
-    for (id<OSOOperationObserver> observer in [self allObservers]) {
+    for (id<OSOOperationObserver> observer in [self allOperationObservers]) {
         [observer operation:self didFinishWithErrors:allErrors];
     }
 
@@ -224,7 +224,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     self.cancelState = YES;
 
     if (self.state > OSOOperationStateReady) {
-        [self finish];
+        [self finishOperation];
     }
 }
 - (void)cancelWithError:(nullable NSError *)error {
@@ -263,7 +263,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 }
 
 // MARK: - Observers
-- (void)addObserver:(id<OSOOperationObserver>)observer {
+- (void)addOperationObserver:(id<OSOOperationObserver>)observer {
     OSSpinLockLock(&__lock);
     if (!self.observers) {
         self.observers = [[NSMutableSet alloc] init];
@@ -271,12 +271,12 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     [self.observers addObject:observer];
     OSSpinLockUnlock(&__lock);
 }
-- (void)removeObserver:(id<OSOOperationObserver>)observer {
+- (void)removeOperationObserver:(id<OSOOperationObserver>)observer {
     OSSpinLockLock(&__lock);
     [self.observers removeObject:observer];
     OSSpinLockUnlock(&__lock);
 }
-- (NSArray<id<OSOOperationObserver>> *)allObservers {
+- (NSArray<id<OSOOperationObserver>> *)allOperationObservers {
     OSSpinLockLock(&__lock);
     NSArray<id<OSOOperationObserver>> *obs = [self.observers allObjects];
     OSSpinLockUnlock(&__lock);

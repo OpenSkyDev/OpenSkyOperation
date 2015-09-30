@@ -36,9 +36,9 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
 - (void)willEnqueue;
 
 // MARK: - Observers
-- (void)addObserver:(id<OSOOperationObserver>)observer;
-- (void)removeObserver:(id<OSOOperationObserver>)observer;
-- (nullable NSArray<id<OSOOperationObserver>> *)allObservers;
+- (void)addOperationObserver:(id<OSOOperationObserver>)observer;
+- (void)removeOperationObserver:(id<OSOOperationObserver>)observer;
+- (nullable NSArray<id<OSOOperationObserver>> *)allOperationObservers;
 
 @end
 
@@ -60,9 +60,9 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
  */
 @interface OSOOperation (HelperMethods)
 
-- (void)finish;
-- (void)finishWithError:(nullable NSError *)error;
-- (void)finishWithErrors:(nullable NSArray<NSError *> *)errors;
+- (void)finishOperation;
+- (void)finishOperationWithError:(nullable NSError *)error;
+- (void)finishOperationWithErrors:(nullable NSArray<NSError *> *)errors;
 
 @end
 
