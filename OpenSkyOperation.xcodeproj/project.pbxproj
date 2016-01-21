@@ -18,7 +18,9 @@
 		94443D2A1B366EA60036000A /* OSOOperationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 94443D291B366E7F0036000A /* OSOOperationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94443D2D1B366FDE0036000A /* OSOOperationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 94443D2B1B366FDE0036000A /* OSOOperationQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		94443D2E1B366FDE0036000A /* OSOOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 94443D2C1B366FDE0036000A /* OSOOperationQueue.m */; };
-		9493C1171BA2318E00D4134E /* TestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9493C1161BA2318E00D4134E /* TestOperation.m */; settings = {ASSET_TAGS = (); }; };
+		947FB6B01C51486000AAD5CB /* OSOErrorCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 947FB6AE1C51486000AAD5CB /* OSOErrorCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		947FB6B11C51486000AAD5CB /* OSOErrorCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 947FB6AF1C51486000AAD5CB /* OSOErrorCollection.m */; };
+		9493C1171BA2318E00D4134E /* TestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9493C1161BA2318E00D4134E /* TestOperation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		94443D291B366E7F0036000A /* OSOOperationObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSOOperationObserver.h; path = ../OSOOperationObserver.h; sourceTree = "<group>"; };
 		94443D2B1B366FDE0036000A /* OSOOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSOOperationQueue.h; sourceTree = "<group>"; };
 		94443D2C1B366FDE0036000A /* OSOOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSOOperationQueue.m; sourceTree = "<group>"; };
+		947FB6AE1C51486000AAD5CB /* OSOErrorCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSOErrorCollection.h; sourceTree = "<group>"; };
+		947FB6AF1C51486000AAD5CB /* OSOErrorCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSOErrorCollection.m; sourceTree = "<group>"; };
 		9493C1151BA2318E00D4134E /* TestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestOperation.h; sourceTree = "<group>"; };
 		9493C1161BA2318E00D4134E /* TestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -110,6 +114,8 @@
 				94443D291B366E7F0036000A /* OSOOperationObserver.h */,
 				94298D741B386CC2009FE1CE /* OSOExclusiveOperationController.h */,
 				94298D751B386CC2009FE1CE /* OSOExclusiveOperationController.m */,
+				947FB6AE1C51486000AAD5CB /* OSOErrorCollection.h */,
+				947FB6AF1C51486000AAD5CB /* OSOErrorCollection.m */,
 				94443D0E1B366A5B0036000A /* Info.plist */,
 			);
 			path = OpenSkyOperation;
@@ -137,6 +143,7 @@
 				94443D251B366A8B0036000A /* OSOOperation.h in Headers */,
 				94443D2A1B366EA60036000A /* OSOOperationObserver.h in Headers */,
 				94443D0D1B366A5B0036000A /* OpenSkyOperation.h in Headers */,
+				947FB6B01C51486000AAD5CB /* OSOErrorCollection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +245,7 @@
 			files = (
 				94443D261B366A8B0036000A /* OSOOperation.m in Sources */,
 				94298D771B386CC2009FE1CE /* OSOExclusiveOperationController.m in Sources */,
+				947FB6B11C51486000AAD5CB /* OSOErrorCollection.m in Sources */,
 				94443D2E1B366FDE0036000A /* OSOOperationQueue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
