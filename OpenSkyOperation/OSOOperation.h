@@ -14,6 +14,8 @@
 
 @protocol OSOOperationObserver;
 
+@class OSOErrorCollection;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, OSOOperationState) {
@@ -47,10 +49,25 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
  */
 @interface OSOOperation (SubclassingHooks)
 
+/**
+ *  Override this method in your sublcass to do your work.
+ */
 - (void)execute;
 
-- (void)finishedWithErrors:(nullable NSArray<NSError *> *)errors;
+/**
+ *  This method can be overridden if you need to do specific cleanup or error handling.
+ *
+ *  @param errors The errors the operation finished with.
+ */
+- (void)operationDidCompleteWithErrors:(nullable NSArray<NSError *> *)errors NS_REQUIRES_SUPER;
 
+/**
+ *  If an operation needs other operations to complete before being run a subclass can create them here.
+ *
+ *  They will be automatically enqueued & added as a pre-requisite of the generating operation.
+ *
+ *  @return An array of operations or nil
+ */
 - (nullable NSArray<__kindof OSOOperation *> *)createDependencies;
 
 @end
@@ -63,6 +80,17 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
 - (void)finishOperation;
 - (void)finishOperationWithError:(nullable NSError *)error;
 - (void)finishOperationWithErrors:(nullable NSArray<NSError *> *)errors;
+
+@end
+
+/**
+ *  These are methods that have been deprecated
+ */
+@interface OSOOperation (DeprecatedMethods)
+
+// This method was deprecated because it's name is to similar to `finishOperationWithErrors:`.
+// This caused confusion and hard to find bugs with operations never completing
+- (void)finishedWithErrors:(nullable NSArray<NSError *> *)errors DEPRECATED_MSG_ATTRIBUTE("This method is deprecated.  Use operationDidCompleteWithErrors: instead");
 
 @end
 

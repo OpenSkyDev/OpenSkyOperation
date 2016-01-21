@@ -7,6 +7,7 @@
  * Created by Skylar Schipper on 6/20/15
  */
 
+@import Darwin.POSIX.pthread;
 @import Darwin.libkern.OSAtomic;
 
 #import "OSOOperation.h"
@@ -19,9 +20,9 @@ static NSString *const kOSOOperationState = @"state";
 static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 @interface OSOOperation () {
-    volatile OSSpinLock __lock;
+    pthread_mutex_t __lock;
+    pthread_mutex_t __stateLock;
     volatile int32_t __calledFinish;
-    volatile OSSpinLock __stateLock;
 }
 
 @property (nonatomic, assign, readwrite) OSOOperationState state;
@@ -40,13 +41,30 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        __lock = OS_SPINLOCK_INIT;
-        __stateLock = OS_SPINLOCK_INIT;
+        pthread_mutex_init(&__lock, NULL);
+        pthread_mutex_init(&__stateLock, NULL);
         __calledFinish = 0;
         _state = OSOOperationStateInitialized;
     }
     return self;
 }
+
+- (void)dealloc {
+    pthread_mutex_destroy(&__lock);
+    pthread_mutex_destroy(&__stateLock);
+}
+
+#if defined(DEBUG) && DEBUG
+
++ (void)initialize {
+    if ([self instancesRespondToSelector:@selector(finishedWithErrors:)]) {
+        NSLog(@"******************** DEPRECATED ********************");
+        NSLog(@"    Class %@ Implements %@",NSStringFromClass(self.class),NSStringFromSelector(@selector(finishedWithErrors:)));
+        NSLog(@"****************************************************");
+    }
+}
+
+#endif
 
 // MARK: - Overrides
 - (BOOL)isExecuting {
@@ -96,7 +114,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 - (void)setState:(OSOOperationState)state {
     [self willChangeValueForKey:kOSOOperationState];
 
-    OSSpinLockLock(&__stateLock);
+    pthread_mutex_lock(&__stateLock);
 
     switch (_state) {
         case OSOOperationStateFinished:
@@ -107,15 +125,15 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
             break;
     }
 
-    OSSpinLockUnlock(&__stateLock);
+    pthread_mutex_unlock(&__stateLock);
 
     [self didChangeValueForKey:kOSOOperationState];
 }
 
 - (OSOOperationState)state {
-    OSSpinLockLock(&__stateLock);
+    pthread_mutex_lock(&__stateLock);
     OSOOperationState state = _state;
-    OSSpinLockUnlock(&__stateLock);
+    pthread_mutex_unlock(&__stateLock);
     return state;
 }
 
@@ -197,7 +215,17 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
     NSArray<NSError *> *allErrors = [self allErrors];
 
-    [self finishedWithErrors:allErrors];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if ([self respondsToSelector:@selector(finishedWithErrors:)]) {
+        NSLog(@"******************** DEPRECATED ********************");
+        NSLog(@"    Class %@ Implements %@",NSStringFromClass(self.class),NSStringFromSelector(@selector(finishedWithErrors:)));
+        NSLog(@"****************************************************");
+        [self finishedWithErrors:allErrors];
+    }
+#pragma clang diagnostic pop
+
+    [self operationDidCompleteWithErrors:allErrors];
 
     for (id<OSOOperationObserver> observer in [self allOperationObservers]) {
         [observer operation:self didFinishWithErrors:allErrors];
@@ -205,14 +233,16 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
     self.state = OSOOperationStateFinished;
 
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     self.observers = nil;
     [_backingErrors removeAllObjects];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
 }
 
-- (void)finishedWithErrors:(nullable NSArray<NSError *> *)errors {
-    // no-op
+- (void)operationDidCompleteWithErrors:(nullable NSArray<NSError *> *)errors {
+#if defined(DEBUG) && DEBUG
+    NSAssert(self.state == OSOOperationStateFinishing, @"%@ called when state is inconsistent.  You shouldn't call this method directly",NSStringFromSelector(_cmd));
+#endif
 }
 
 // MARK: - Cancel
@@ -236,19 +266,19 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 // MARK: - Errors
 - (void)appendErrors:(NSArray<NSError *> *)errors {
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     if (!_backingErrors) {
         _backingErrors = [[NSMutableSet alloc] init];
     }
     [_backingErrors addObjectsFromArray:errors];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
 }
 
 - (NSArray<NSError *> *)allErrors {
     NSArray<NSError *> *errors = nil;
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     errors = [_backingErrors allObjects];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
     return errors;
 }
 
@@ -264,22 +294,22 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 // MARK: - Observers
 - (void)addOperationObserver:(id<OSOOperationObserver>)observer {
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     if (!self.observers) {
         self.observers = [[NSMutableSet alloc] init];
     }
     [self.observers addObject:observer];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
 }
 - (void)removeOperationObserver:(id<OSOOperationObserver>)observer {
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     [self.observers removeObject:observer];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
 }
 - (NSArray<id<OSOOperationObserver>> *)allOperationObservers {
-    OSSpinLockLock(&__lock);
+    pthread_mutex_lock(&__lock);
     NSArray<id<OSOOperationObserver>> *obs = [self.observers allObjects];
-    OSSpinLockUnlock(&__lock);
+    pthread_mutex_unlock(&__lock);
     return obs;
 }
 
