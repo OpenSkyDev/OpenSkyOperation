@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithName:(nullable NSString *)name;
 
++ (OSOOperationQueue *)backgroundQueue;
+
++ (OSOOperationQueue *)utilityQueue;
+
 @end
 
 NS_ASSUME_NONNULL_END

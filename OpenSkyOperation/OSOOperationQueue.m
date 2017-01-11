@@ -63,4 +63,27 @@
     }
 }
 
+// MARK: - Helpers
++ (OSOOperationQueue *)backgroundQueue {
+    static OSOOperationQueue *queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = [[OSOOperationQueue alloc] init];
+        queue.name = @"com.planningcenter.QoSBackground";
+        queue.qualityOfService = NSQualityOfServiceBackground;
+    });
+    return queue;
+}
+
++ (OSOOperationQueue *)utilityQueue {
+    static OSOOperationQueue *queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = [[OSOOperationQueue alloc] init];
+        queue.name = @"com.planningcenter.QoSUtility";
+        queue.qualityOfService = NSQualityOfServiceUtility;
+    });
+    return queue;
+}
+
 @end
