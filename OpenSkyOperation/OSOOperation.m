@@ -16,6 +16,20 @@
 
 #define OSOOperationAssert(condition, desc, ...) NSAssert(condition, desc, ##__VA_ARGS__)
 
+#if !defined(NS_BLOCK_ASSERTIONS)
+
+    #define oso_pthread_mutex_init(lock, attr, msg) \
+    { \
+        int state = pthread_mutex_init(lock, attr); \
+        NSAssert(state == 0, msg); \
+    }
+
+#else
+
+    #define oso_pthread_mutex_init(lock, attr, msg) pthread_mutex_init(lock, attr);
+
+#endif
+
 static NSString *const kOSOOperationState = @"state";
 static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
@@ -41,8 +55,8 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        pthread_mutex_init(&__lock, NULL);
-        pthread_mutex_init(&__stateLock, NULL);
+        oso_pthread_mutex_init(&__lock, NULL, @"Failed to initialize __lock");
+        oso_pthread_mutex_init(&__stateLock, NULL, @"Failed to initialize __stateLock");
         __calledFinish = 0;
         _state = OSOOperationStateInitialized;
     }
@@ -53,18 +67,6 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     pthread_mutex_destroy(&__lock);
     pthread_mutex_destroy(&__stateLock);
 }
-
-#if defined(DEBUG) && DEBUG
-
-+ (void)initialize {
-    if ([self instancesRespondToSelector:@selector(finishedWithErrors:)]) {
-        NSLog(@"******************** DEPRECATED ********************");
-        NSLog(@"    Class %@ Implements %@",NSStringFromClass(self.class),NSStringFromSelector(@selector(finishedWithErrors:)));
-        NSLog(@"****************************************************");
-    }
-}
-
-#endif
 
 // MARK: - Overrides
 - (BOOL)isExecuting {
@@ -215,16 +217,6 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
     NSArray<NSError *> *allErrors = [self allErrors];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if ([self respondsToSelector:@selector(finishedWithErrors:)]) {
-        NSLog(@"******************** DEPRECATED ********************");
-        NSLog(@"    Class %@ Implements %@",NSStringFromClass(self.class),NSStringFromSelector(@selector(finishedWithErrors:)));
-        NSLog(@"****************************************************");
-        [self finishedWithErrors:allErrors];
-    }
-#pragma clang diagnostic pop
-
     [self operationDidCompleteWithErrors:allErrors];
 
     for (id<OSOOperationObserver> observer in [self allOperationObservers]) {
@@ -254,7 +246,8 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
     self.cancelState = YES;
 
     if (self.state > OSOOperationStateReady) {
-        [self finishOperation];
+        NSError *cancel = [NSError errorWithDomain:OSOOperationErrorDomain code:OSOOperationErrorCanceled userInfo:nil];
+        [self finishOperationWithError:cancel];
     }
 }
 - (void)cancelWithError:(nullable NSError *)error {
@@ -314,6 +307,8 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 }
 
 @end
+
+NSString *const OSOOperationErrorDomain = @"OSOOperationErrorDomain";
 
 BOOL OSOOperationCanTransitionToState(OSOOperationState current, OSOOperationState new, BOOL canceled) {
     if (current == OSOOperationStateInitialized && new == OSOOperationStatePending) {

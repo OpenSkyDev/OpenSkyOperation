@@ -83,16 +83,10 @@ typedef NS_ENUM(NSInteger, OSOOperationState) {
 
 @end
 
-/**
- *  These are methods that have been deprecated
- */
-@interface OSOOperation (DeprecatedMethods)
-
-// This method was deprecated because it's name is to similar to `finishOperationWithErrors:`.
-// This caused confusion and hard to find bugs with operations never completing
-- (void)finishedWithErrors:(nullable NSArray<NSError *> *)errors DEPRECATED_MSG_ATTRIBUTE("This method is deprecated.  Use operationDidCompleteWithErrors: instead");
-
-@end
+FOUNDATION_EXTERN NSString *const OSOOperationErrorDomain;
+typedef NS_ENUM(NSInteger, OSOOperationError) {
+    OSOOperationErrorCanceled = 0
+};
 
 FOUNDATION_EXTERN BOOL OSOOperationCanTransitionToState(OSOOperationState, OSOOperationState, BOOL);
 
