@@ -86,4 +86,15 @@
     return queue;
 }
 
++ (OSOOperationQueue *)criticalQueue {
+    static OSOOperationQueue *queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = [[OSOOperationQueue alloc] init];
+        queue.name = @"com.planningcenter.QoSUserInteractive";
+        queue.qualityOfService = NSQualityOfServiceUserInteractive;
+    });
+    return queue;
+}
+
 @end

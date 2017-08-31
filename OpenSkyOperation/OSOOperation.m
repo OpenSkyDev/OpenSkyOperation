@@ -14,6 +14,10 @@
 
 #import <OpenSkyOperation/OSOOperationObserver.h>
 
+#ifndef OSO_VERBOSE_LOGGING
+    #define OSO_VERBOSE_LOGGING 0
+#endif
+
 #define OSOOperationAssert(condition, desc, ...) NSAssert(condition, desc, ##__VA_ARGS__)
 
 #if !defined(NS_BLOCK_ASSERTIONS)
@@ -170,6 +174,11 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 - (void)main {
     OSOOperationAssert(self.state == OSOOperationStateReady, @"This operation must be performed on an OSOOperationQueue");
+
+#if OSO_VERBOSE_LOGGING
+    NSString *message = [NSString stringWithFormat:@"Running %@ on %@",NSStringFromClass(self.class),[[NSOperationQueue currentQueue] name]];
+    printf("OSO -> %s\n",[message UTF8String]);
+#endif
 
     if ([self isCancelled]) {
         [self finishOperation];

@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithName:(nullable NSString *)name;
 
+@property (nonatomic, strong, class, readonly) OSOOperationQueue *criticalQueue;
+
 @property (nonatomic, strong, class, readonly) OSOOperationQueue *backgroundQueue;
 
 @property (nonatomic, strong, class, readonly) OSOOperationQueue *utilityQueue;
