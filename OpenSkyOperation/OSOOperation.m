@@ -74,7 +74,7 @@ static NSString *const kOSOOperationCanceledState = @"cancelledState";
 
 // MARK: - Overrides
 - (BOOL)isExecuting {
-    return (self.state == OSOOperationStateExecuting);
+    return (self.state == OSOOperationStateExecuting || self.state == OSOOperationStateFinishing);
 }
 - (BOOL)isReady {
     if (self.state == OSOOperationStateInitialized) {
