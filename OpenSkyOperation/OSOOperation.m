@@ -18,7 +18,11 @@
     #define OSO_VERBOSE_LOGGING 0
 #endif
 
-#define OSOOperationAssert(condition, desc, ...) NSAssert(condition, desc, ##__VA_ARGS__)
+#if 0
+    #define OSOOperationAssert(condition, desc, ...) NSAssert(condition, desc, ##__VA_ARGS__)
+#else
+    #define OSOOperationAssert(condition, desc, ...)
+#endif
 
 #if !defined(NS_BLOCK_ASSERTIONS)
 
